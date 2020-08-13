@@ -1,24 +1,52 @@
-FROM alpine
+FROM buildpack-deps:focal AS builder
 
-RUN addgroup -g 1000 user && \
-    adduser -u 1000 -G user -h /home/user -s /bin/sh -D user
+WORKDIR /workspace
 
-RUN apk --update add \
-  docker \
-  && rm -rf /var/cache/apk/*
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends software-properties-common && \
+  add-apt-repository -y ppa:neurobin/ppa && \
+  apt-get update && \
+  apt-get install -y shc
 
-RUN USER=user && \
-    GROUP=user && \
-    wget -q -O- https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.4-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
-    chmod 4755 /usr/local/bin/fixuid && \
-    mkdir -p /etc/fixuid && \
-    printf "user: $USER\ngroup: $GROUP\n" > /etc/fixuid/config.yml
+COPY fixdockergid.sh .
 
-COPY fixdockergid /usr/local/bin/
+RUN shc -S -f fixdockergid.sh -o fixdockergid
 
-RUN chmod 4755 /usr/local/bin/fixdockergid
+FROM ubuntu
 
-USER user:user
+ARG USER=user
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
-COPY entrypoint.sh /usr/local/bin/
-ENTRYPOINT [ "entrypoint.sh" ]
+RUN groupadd --gid $USER_GID $USER && \
+	useradd --uid $USER_UID --gid $USER_GID -m $USER
+
+RUN apt-get update && \
+	apt-get install --no-install-recommends -y \
+	apt-transport-https \
+	ca-certificates \
+	curl \
+	gnupg-agent \
+	software-properties-common && \
+	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+	add-apt-repository \
+	"deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+	$(lsb_release -cs) \
+	stable" && \
+	apt-get update && \
+	apt-get install --no-install-recommends -y docker-ce-cli
+
+RUN curl -fsSL https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
+	chown root:root /usr/local/bin/fixuid && \
+  chmod 4755 /usr/local/bin/fixuid && \
+	mkdir -p /etc/fixuid && \
+	printf "user: $USER\ngroup: $USER\n" > /etc/fixuid/config.yml
+
+COPY --from=builder /workspace/fixdockergid /usr/local/bin/
+RUN chown root:root /usr/local/bin/fixdockergid && \
+  chmod 4755 /usr/local/bin/fixdockergid
+
+COPY entrypoint.sh /
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+USER $USER

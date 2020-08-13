@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "Vagrantfile": "ruby",
+        "*.Jenkinsfile": "groovy",
+        "*.m4": "shellscript",
+        "hosts": "shellscript",
+        "*.wsb": "xml",
+        "*.yml": "yaml",
+        "random": "c",
+        "new": "cpp",
+        "*.tcc": "c"
+    }
+}

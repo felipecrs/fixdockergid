@@ -1,7 +1,3 @@
 #!/bin/sh
 
-eval $( fixuid -q )
-
-fixdockergid
-
-exec "$@"
+exec fixdockergid "$(id -u)" "$(id -g)" "$@"
