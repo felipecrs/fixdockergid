@@ -1,42 +1,22 @@
 # fixdockergid
 
-This adjust the docker group id on the container to match the docker group id on host, so we can get rid of permission denied errors when we run a docker on docker container with a non-root user.
+This adjusts the docker group id on the container to match the docker group id on host, so we can get rid of permission denied errors when we try to access the docker host from a container as a non-root user.
 
-# How to build
-
-Install the dependencies:
-
-```bash
-sudo apt update
-sudo apt install -y g++-multilib
-```
-
-Build the binary:
-
-```bash
-make
-```
-
-# How to test
+# How do I test?
 
 I left a `Dockerfile` in this repository for testing purposes, just run:
 
 ```bash
 docker build -t fixdockergid .
-docker run --rm -it -u "$(id -u):$(id -g)" -v /var/run/docker.sock:/var/run/docker.sock fixdockergid bash
+docker run --rm -it -u "$(id -u):$(id -g)" -v /var/run/docker.sock:/var/run/docker.sock fixdockergid docker version
 ```
 
-Now try something like:
+And note: you're able to access the docker host from the container as a non-root user.
 
-```bash
-docker version
-```
+# How do I add this to my Dockerfile?
 
-And you'll see: no permission denied errors anymore.
+This was only tested on `ubuntu` containers. See: [example.Dockerfile](./example.Dockerfile).
 
-# How to add in my Dockerfile
-
-[example.Dockerfile](./example.Dockerfile)
 ```Dockerfile
 # Put this in the beginning of your Dockerfile
 # Change to some commit hash for safety
