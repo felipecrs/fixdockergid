@@ -2,6 +2,8 @@
 
 This adjusts the docker group id on the container to match the docker group id on host, so we can get rid of permission denied errors when we try to access the docker host from a container as a non-root user.
 
+The `fixdockergid` depends on [`fixuid`](https://github.com/boxboat/fixuid) to work, and [I hope its functionalities gets incorporated in it](https://github.com/boxboat/fixuid/issues/29) in the future.
+
 # How do I test?
 
 I left a `Dockerfile` in this repository for testing purposes, just run:
