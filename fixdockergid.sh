@@ -35,4 +35,4 @@ shift
 GID=$1
 shift
 
-exec setpriv "--reuid=$UID" "--regid=$GID" --init-groups fixuid "$@"
+exec setpriv "--reuid=$UID" "--regid=$GID" --init-groups -- fixuid -q -- "$@"

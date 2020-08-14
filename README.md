@@ -36,7 +36,7 @@ WORKDIR /workspace
 
 ARG FIXDOCKERGID_COMMIT
 RUN curl -fsSLO https://raw.githubusercontent.com/felipecassiors/fixdockergid/$FIXDOCKERGID_COMMIT/fixdockergid.sh \
-  && shc -S -f fixdockergid.sh -o fixdockergid
+  && shc -S -r -f fixdockergid.sh -o fixdockergid
 
 # Your Dockerfile with your custom user goes here, this is an example:
 FROM ubuntu

@@ -10,7 +10,7 @@ RUN apt-get update \
 
 COPY fixdockergid.sh .
 
-RUN shc -S -f fixdockergid.sh -o fixdockergid
+RUN shc -S -r -f fixdockergid.sh -o fixdockergid
 
 FROM ubuntu
 
