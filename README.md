@@ -4,6 +4,10 @@ This adjusts the docker group id on the container to match the docker group id o
 
 The `fixdockergid` depends on [`fixuid`](https://github.com/boxboat/fixuid) to work, and [I hope its functionalities gets incorporated in it](https://github.com/boxboat/fixuid/issues/29) in the future.
 
+Advantages:
+  - No need to start the container as `root`.
+  - Does not require `sudo` to perform its operations.
+
 # How do I test?
 
 I left a `Dockerfile` in this repository for testing purposes, just run:
@@ -13,7 +17,7 @@ docker build -t fixdockergid .
 docker run --rm -it -u "$(id -u):$(id -g)" -v /var/run/docker.sock:/var/run/docker.sock fixdockergid docker version
 ```
 
-And note: you're able to access the docker host from the container as a non-root user.
+And note: you're able to access the docker host from the container as a non-root user. The container's user matches the user on host (thanks to `fixuid`), and the user on the container is part of the a group which matches the docker group on host.
 
 # How do I add this to my Dockerfile?
 
