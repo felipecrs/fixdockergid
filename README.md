@@ -22,7 +22,7 @@ And note: you're able to access the docker host from the container as a non-root
 
 ## Install
 
-Just add the following snippet to your `Dockerfile`. This was only tested on `ubuntu` containers. See: [example.Dockerfile](./example.Dockerfile).
+Just add the following snippet to your `Dockerfile`, it will also install and configure [`fixuid`](https://github.com/boxboat/fixuid) for you. This was only tested on `ubuntu` containers. See: [example.Dockerfile](./example.Dockerfile).
 
 ```Dockerfile
 # You must set USER root in case your Dockerfile switched to another user before
