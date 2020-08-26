@@ -15,7 +15,7 @@ RUN apt-get update \
   && apt-get update \
   && apt-get install -y docker-ce-cli \
   # Clean up
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/
+  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
 # You must set USER root in case your Dockerfile switched to another user before
 # Replace with a commit hash

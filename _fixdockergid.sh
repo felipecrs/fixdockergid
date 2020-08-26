@@ -30,9 +30,7 @@ fi
 DOCKER_GROUP=$(getent group "$DOCKER_GID" | cut -d: -f1)
 usermod -a -G "$DOCKER_GROUP" "$USER"
 
-UID=$1
-shift
-GID=$1
-shift
+UID=$1; shift
+GID=$1; shift
 
-exec setpriv "--reuid=$UID" "--regid=$GID" --init-groups -- fixuid -q -- "$@"
+exec setpriv "--reuid=$UID" "--regid=$GID" --init-groups -- "$@"

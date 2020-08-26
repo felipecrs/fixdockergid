@@ -69,6 +69,6 @@ tee $fixdockergid_binary >/dev/null \
   <<EOF
 #!/bin/sh
 
-exec $fixdockergid_dir/$_fixdockergid_filename "\$(id -u)" "\$(id -g)" "\$@"
+exec fixuid -q -- $fixdockergid_dir/$_fixdockergid_filename "\$(id -u)" "\$(id -g)" "\$@"
 EOF
 chmod +x $fixdockergid_binary
