@@ -7,6 +7,10 @@ ARG USER_GID=$USER_UID
 RUN groupadd --gid $USER_GID $USERNAME \
   && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
+# You must set USER root in case your Dockerfile switched to another user before
+# fixdockergid installation must be run as root
+USER root
+
 # Install Docker CLI
 RUN apt-get update \
   && apt-get install -y apt-transport-https ca-certificates curl gnupg2 lsb-release \
@@ -17,7 +21,6 @@ RUN apt-get update \
   # Clean up
   && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# You must set USER root in case your Dockerfile switched to another user before
 # Replace with a commit hash
 ARG FIXDOCKERGID_COMMIT='master'
 # You must also set ARG USERNAME in case your Dockerfile does not have it already
