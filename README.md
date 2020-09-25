@@ -12,10 +12,10 @@ Advantages:
 
 ## Try it out
 
-I built an image for testing using the [`Dockerfile`](./Dockerfile) and pushed to [DockerHub as felipecassiors/fixdockergid](https://hub.docker.com/r/felipecassiors/fixdockergid) so you can try it out, just run:
+I built an image for testing using the [`Dockerfile`](./Dockerfile) and pushed to [DockerHub as felipecrs/fixdockergid](https://hub.docker.com/r/felipecrs/fixdockergid) so you can try it out, just run:
 
 ```bash
-docker run --rm -u "$(id -u):$(id -g)" -v /var/run/docker.sock:/var/run/docker.sock felipecassiors/fixdockergid docker run hello-world
+docker run --rm -u "$(id -u):$(id -g)" -v /var/run/docker.sock:/var/run/docker.sock felipecrs/fixdockergid docker run hello-world
 ```
 
 And note: you're able to access the docker host from the container as a non-root user. The container's user matches the user on host (thanks to `fixuid`), and the user on the container is part of the a group which matches the docker group on host.
@@ -27,7 +27,7 @@ Just add the following snippet to your `Dockerfile`, it will also install and co
 ```Dockerfile
 # You must set USER root in case your Dockerfile switched to another user before
 # Replace with a commit hash
-ARG FIXDOCKERGID_COMMIT='master'
+ARG 
 # You must also set ARG USERNAME in case your Dockerfile does not have it already
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/felipecassiors/fixdockergid/$FIXDOCKERGID_COMMIT/install.sh)"
 
