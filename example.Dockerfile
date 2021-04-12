@@ -1,30 +1,31 @@
 FROM ubuntu
 
-ARG USERNAME=user
+# The fixdockergid installation must be run as root, so you must set USER root
+# in case your Dockerfile switched to another user before.
+USER root
+
+# Create non-root user
+ARG USERNAME="rootless"
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 RUN groupadd --gid $USER_GID $USERNAME \
   && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
-# You must set USER root in case your Dockerfile switched to another user before
-# fixdockergid installation must be run as root
-USER root
-
 # Install Docker CLI
 RUN apt-get update \
-  && apt-get install -y apt-transport-https ca-certificates curl gnupg2 lsb-release \
+  && apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release \
   && curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null \
   && echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list \
   && apt-get update \
   && apt-get install -y docker-ce-cli \
   # Clean up
-  && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
 
 # Replace with a commit hash
-ARG FIXDOCKERGID_COMMIT='master'
+ARG FIXDOCKERGID_COMMIT='HEAD'
 # You must also set ARG USERNAME in case your Dockerfile does not have it already
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/felipecassiors/fixdockergid/$FIXDOCKERGID_COMMIT/install.sh)"
+RUN curl -fsSL https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/install.sh | sh -
 
 ENTRYPOINT [ "fixdockergid" ]
 

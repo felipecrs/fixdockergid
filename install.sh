@@ -28,7 +28,7 @@ if [ ! -f "$_fixdockergid_filename" ]; then
     error "The FIXDOCKERGID_COMMIT environment variable must be set."
   fi
   echo "Downloading $_fixdockergid_filename to $fixdockergid_dir/$_fixdockergid_filename"
-  _fixdockergid_url="https://raw.githubusercontent.com/felipecassiors/fixdockergid/$FIXDOCKERGID_COMMIT/_fixdockergid"
+  _fixdockergid_url="https://raw.githubusercontent.com/felipecrs/fixdockergid/$FIXDOCKERGID_COMMIT/_fixdockergid"
   if [ "$(command -v curl)" ]; then
     curl -fsSL -o $_fixdockergid_filename "$_fixdockergid_url"
   else

@@ -26,10 +26,14 @@ Just add the following snippet to your `Dockerfile`, it will also install and co
 
 ```Dockerfile
 # You must set USER root in case your Dockerfile switched to another user before
+USER root
+
+# Replace with your non-root user name
+ARG USERNAME="rootless"
 # Replace with a commit hash
-ARG 
-# You must also set ARG USERNAME in case your Dockerfile does not have it already
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/felipecassiors/fixdockergid/$FIXDOCKERGID_COMMIT/install.sh)"
+ARG FIXDOCKERGID_COMMIT="HEAD"
+
+RUN curl -fsSL https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/install.sh | sh -
 
 ENTRYPOINT [ "fixdockergid" ]
 
