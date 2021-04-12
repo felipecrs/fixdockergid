@@ -1,7 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 
-name=fixdockergid-builder
-docker build -t $name -f build.Dockerfile .
-docker run -d --name $name $name sleep infinity
-docker cp fixdockergid-builder:/workspace/_fixdockergid _fixdockergid
-docker rm -f $name
+set -euxo pipefail
+
+DOCKER_BUILDKIT=1 docker build --target=bin --platform=amd64 -o . .
