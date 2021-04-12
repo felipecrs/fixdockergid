@@ -6,12 +6,12 @@ DOCKER_SOCK='/var/run/docker.sock'
 CONFIG_YML='/etc/fixuid/config.yml'
 
 if [ ! -f $CONFIG_YML ]; then
-  echo "File does not exist: $CONFIG_YML. Did you configured fixuid properly?" >&2
+  echo "File does not exist: $CONFIG_YML. Did you configure fixuid properly?" >&2
   exit 1
 fi
 
 if [ "$(id -u)" != 0 ]; then
-  echo "Not running as root. Did you configured the suid bit properly?" >&2
+  echo "Not running as root. Did you configure the suid bit properly?" >&2
   exit 1
 fi
 
