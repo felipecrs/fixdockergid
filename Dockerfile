@@ -19,7 +19,7 @@ FROM scratch AS bin
 COPY --from=build /workspace/_fixdockergid /
 
 
-FROM ubuntu
+FROM ubuntu:focal
 
 # Create non-root user
 ARG USERNAME="rootless"
@@ -31,11 +31,11 @@ RUN groupadd --gid $USER_GID $USERNAME \
 
 # Install Docker CLI
 RUN apt-get update \
-  && apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release \
-  && curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null \
-  && echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list \
+  && apt-get install -y apt-transport-https ca-certificates curl gnupg \
+  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - 2>/dev/null \
+  && echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" | tee /etc/apt/sources.list.d/docker.list \
   && apt-get update \
-  && apt-get install -y docker-ce-cli \
+  && apt-get install -y --no-install-recommends docker-ce-cli \
   # Create docker group
   && groupadd docker \
   && usermod -aG docker $USERNAME \
