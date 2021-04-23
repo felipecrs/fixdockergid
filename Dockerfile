@@ -19,7 +19,7 @@ FROM scratch AS bin
 COPY --from=build /workspace/_fixdockergid /
 
 
-FROM ubuntu:focal
+FROM buildpack-deps:focal-curl
 
 # Create non-root user
 ARG USERNAME="rootless"
@@ -30,16 +30,14 @@ RUN groupadd --gid $USER_GID $USERNAME \
   && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
 # Install Docker CLI
-RUN apt-get update \
-  && apt-get install -y apt-transport-https ca-certificates curl gnupg \
-  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - 2>/dev/null \
-  && echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" | tee /etc/apt/sources.list.d/docker.list \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends docker-ce-cli \
-  # Create docker group
+RUN curl -fsSL \
+  https://download.docker.com/linux/ubuntu/dists/focal/pool/stable/amd64/docker-ce-cli_20.10.6~3-0~ubuntu-focal_amd64.deb \
+  -o /tmp/docker.deb \
+  && apt-get install -y --no-install-recommends /tmp/docker.deb \
+  && rm -f /tmp/docker.deb \
+  # Create docker group \
   && groupadd docker \
   && usermod -aG docker $USERNAME \
-  # Clean up \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=bin / /usr/local/share/fixdockergid/
