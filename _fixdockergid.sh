@@ -31,13 +31,16 @@ fi
 GID=$1; shift
 
 if [ -S $DOCKER_SOCK ]; then
-  USER="$(awk '/user:/ {print $2}' $CONFIG_YML)"
-
   DOCKER_GID="$(stat -c "%g" $DOCKER_SOCK)"
   if [ ! "$(getent group "$DOCKER_GID")" ]; then
-    groupadd -g "$DOCKER_GID" docker
+    if [ "$(getent group docker)" ]; then
+      groupmod -g "$DOCKER_GID" docker
+    else
+      groupadd -g "$DOCKER_GID" docker
+    fi
   fi
   DOCKER_GROUP=$(getent group "$DOCKER_GID" | cut -d: -f1)
+  USER="$(awk '/user:/ {print $2}' $CONFIG_YML)"
   usermod -a -G "$DOCKER_GROUP" "$USER"
 fi
 
