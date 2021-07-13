@@ -72,3 +72,14 @@ tee $fixdockergid_binary >/dev/null \
 exec fixuid -q -- $fixdockergid_dir/$_fixdockergid_filename "\$(id -u)" "\$(id -g)" "\$@"
 EOF
 chmod +x $fixdockergid_binary
+
+echo "Ensuring docker group exists"
+if [ ! "$(getent group docker)" ]; then
+  echo "Creating docker group"
+  groupadd docker
+fi
+
+echo "Ensuring $USERNAME is part of docker group"
+usermod -a -G docker "$USERNAME"
+
+echo "fixdockergid installation done."
