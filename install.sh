@@ -75,7 +75,7 @@ chmod +x $fixdockergid_binary
 
 echo "Ensuring docker group exists"
 if [ ! "$(getent group docker)" ]; then
-  groupadd --gid 999 --force docker
+  groupadd --system docker
 fi
 
 echo "Ensuring $USERNAME is part of docker group"
