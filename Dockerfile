@@ -48,6 +48,10 @@ RUN /tmp/install.sh \
 ARG DOCKER_GID
 RUN if [ -n "${DOCKER_GID}" ]; then groupmod -g "${DOCKER_GID}" docker; fi
 
+# Create a group for host docker gid, to detect if fixdocker will handle it
+ARG HOST_DOCKER_GID
+RUN if [ -n "${HOST_DOCKER_GID}" ]; then groupadd -g "${HOST_DOCKER_GID}" hostdocker; fi
+
 ENTRYPOINT [ "fixdockergid" ]
 
 USER ${USERNAME}

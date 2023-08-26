@@ -27,6 +27,14 @@ if [ -S $DOCKER_SOCK ]; then
       groupadd -g "$DOCKER_GID" docker
     fi
   fi
+  DOCKER_GROUP=$(getent group "$DOCKER_GID" | cut -d: -f1)
+  # Make sure the docker group name is docker, so --group-add=docker always works
+  if [ "$DOCKER_GROUP" != docker ]; then
+    if [ "$(getent group docker)" ]; then
+      groupdel docker
+    fi
+    groupmod -n docker "$DOCKER_GROUP"
+  fi
   USER="$(awk '/user:/ {print $2}' $CONFIG_YML)"
   usermod -a -G docker "$USER"
 fi

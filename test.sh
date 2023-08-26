@@ -57,6 +57,6 @@ test_docker_gid="$((current_docker_gid - 1))"
 # Ensure UID in image is different from host UID to exercise fixuid
 # Ensure docker GID in image is different from host docker GID to exercise fixdockergid
 docker build -t "${name}" -f Dockerfile . \
-  --build-arg USER_UID="${test_uid}" --build-arg DOCKER_GID="${test_docker_gid}"
+  --build-arg USER_UID="${test_uid}" --build-arg DOCKER_GID="${test_docker_gid}" --build-arg HOST_DOCKER_GID="${current_docker_gid}"
 
 tests
