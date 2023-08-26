@@ -19,7 +19,10 @@ fixdockergid_dir=/usr/local/share/fixdockergid
 mkdir -p $fixdockergid_dir
 cd $fixdockergid_dir
 _fixdockergid_filename='_fixdockergid'
-if [ ! -f "$_fixdockergid_filename" ]; then
+if [ -f "$_fixdockergid_filename" ]; then
+  # Used when building fixdockergid's Dockerfile
+  echo "Using existing $fixdockergid_dir/$_fixdockergid_filename"
+else
   if [ -z "${FIXDOCKERGID_COMMIT+x}" ]; then
     error "The FIXDOCKERGID_COMMIT environment variable must be set."
   fi
@@ -30,8 +33,6 @@ if [ ! -f "$_fixdockergid_filename" ]; then
   else
     wget -q -O $_fixdockergid_filename "$_fixdockergid_url"
   fi
-else
-  echo "Using existing $fixdockergid_dir/$_fixdockergid_filename"
 fi
 chown root:root $_fixdockergid_filename
 chmod 4755 $_fixdockergid_filename

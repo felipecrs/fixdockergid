@@ -1,3 +1,6 @@
+# syntax=docker/dockerfile:1.2
+
+# Compiles _fixdockergid.sh with the suid bit set
 FROM buildpack-deps:focal AS build
 
 WORKDIR /workspace
@@ -5,7 +8,7 @@ WORKDIR /workspace
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 768A7859711D60A876466300137880E4BA5CB7FD 2>/dev/null \
   && echo "deb http://ppa.launchpad.net/neurobin/ppa/ubuntu focal main" | tee /etc/apt/sources.list.d/shc.list \
   && apt-get update \
-  && apt-get install -y shc \
+  && apt-get install -y --no-install-recommends shc \
   # Clean up \
   && rm -rf /var/lib/apt/lists/*
 
@@ -14,12 +17,14 @@ COPY _fixdockergid.sh .
 RUN shc -S -r -f _fixdockergid.sh -o _fixdockergid
 
 
+# Used by build.sh
 FROM scratch AS bin
 
 COPY --from=build /workspace/_fixdockergid /
 
 
-FROM ubuntu:focal
+# Main image
+FROM ubuntu:focal AS main
 
 # Create non-root user
 ARG USERNAME="rootless"
@@ -40,9 +45,18 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 COPY --from=bin / /usr/local/share/fixdockergid/
-COPY install.sh /tmp/
-RUN /tmp/install.sh \
-  && rm -f /tmp/install.sh
+RUN --mount=source=install.sh,target=/tmp/install.sh \
+  /tmp/install.sh
+
+ENTRYPOINT [ "fixdockergid" ]
+
+USER ${USERNAME}
+
+
+# Used by test.sh
+FROM main AS test
+
+USER root
 
 # Change docker group id (useful during testing)
 ARG DOCKER_GID
@@ -52,6 +66,8 @@ RUN if [ -n "${DOCKER_GID}" ]; then groupmod -g "${DOCKER_GID}" docker; fi
 ARG HOST_DOCKER_GID
 RUN if [ -n "${HOST_DOCKER_GID}" ]; then groupadd -g "${HOST_DOCKER_GID}" hostdocker; fi
 
-ENTRYPOINT [ "fixdockergid" ]
+USER rootless
 
-USER ${USERNAME}
+
+# Set default target
+FROM main

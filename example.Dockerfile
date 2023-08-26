@@ -19,9 +19,6 @@ RUN apt-get update \
   && echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" | tee /etc/apt/sources.list.d/docker.list \
   && apt-get update \
   && apt-get install -y --no-install-recommends docker-ce-cli \
-  # Create docker group
-  && groupadd docker \
-  && usermod -aG docker $USERNAME \
   # Clean up \
   && rm -rf /var/lib/apt/lists/*
 
