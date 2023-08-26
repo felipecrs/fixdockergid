@@ -18,20 +18,6 @@ if [ "$(id -u)" != 0 ]; then
   error "Not running as root. Did you configure the suid bit properly?"
 fi
 
-if ! [ "$1" -eq "$1" ] 2>/dev/null; then
-  error "First argument does not seem to be an UID. Usage: $0 \$(id -u) \$(id -g) [...]"
-fi
-
-UID=$1
-shift
-
-if ! [ "$1" -eq "$1" ] 2>/dev/null; then
-  error "Second argument does not seem to be an GID. Usage: $0 \$(id -u) \$(id -g) [...]"
-fi
-
-GID=$1
-shift
-
 if [ -S $DOCKER_SOCK ]; then
   DOCKER_GID="$(stat -c "%g" $DOCKER_SOCK)"
   if [ ! "$(getent group "$DOCKER_GID")" ]; then
@@ -44,5 +30,3 @@ if [ -S $DOCKER_SOCK ]; then
   USER="$(awk '/user:/ {print $2}' $CONFIG_YML)"
   usermod -a -G docker "$USER"
 fi
-
-exec setpriv "--reuid=$UID" "--regid=$GID" --init-groups -- "$@"

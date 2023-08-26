@@ -12,7 +12,7 @@ function tests() {
   docker run --rm --name "${name}" -v /var/run/docker.sock:/var/run/docker.sock -u "${uid_gid}" "${name}" \
     whoami | grep '^rootless$'
   docker run --rm --name "${name}" -v /var/run/docker.sock:/var/run/docker.sock -u "${uid_gid}" "${name}" \
-    groups | grep '^rootless '
+    groups | grep '^rootless docker$'
 
   # Confirm fixdockergid is working
   docker run --rm --name "${name}" -v /var/run/docker.sock:/var/run/docker.sock -u "${uid_gid}" "${name}" \

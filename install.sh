@@ -15,10 +15,6 @@ if [ ! "$(command -v curl)" ] && [ ! "$(command -v wget)" ]; then
   error "This script needs curl or wget installed."
 fi
 
-if [ ! "$(command -v setpriv)" ]; then
-  error "The fixdockergid needs setpriv installed."
-fi
-
 fixdockergid_dir=/usr/local/share/fixdockergid
 mkdir -p $fixdockergid_dir
 cd $fixdockergid_dir
@@ -45,8 +41,9 @@ if [ ! "$(command -v fixuid)" ]; then
   if [ -z "${USERNAME+x}" ]; then
     error "The USERNAME environment variable must be set."
   fi
-  echo "Installing fixuid"
-  fixuid_url='https://github.com/boxboat/fixuid/releases/download/v0.5/fixuid-0.5-linux-amd64.tar.gz'
+  fixuid_version='0.6.0'
+  echo "Installing fixuid v$fixuid_version"
+  fixuid_url="https://github.com/boxboat/fixuid/releases/download/v$fixuid_version/fixuid-$fixuid_version-linux-amd64.tar.gz"
   fixuid_filename='fixuid.tar.gz'
   if [ "$(command -v curl)" ]; then
     curl -fsSL -o $fixuid_filename $fixuid_url
@@ -69,7 +66,11 @@ tee $fixdockergid_binary >/dev/null \
   <<EOF
 #!/bin/sh
 
-exec fixuid -q -- $fixdockergid_dir/$_fixdockergid_filename "\$(id -u)" "\$(id -g)" "\$@"
+set -eu
+
+'$fixdockergid_dir/$_fixdockergid_filename'
+
+exec fixuid -q -- "\$@"
 EOF
 chmod +x $fixdockergid_binary
 
