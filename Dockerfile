@@ -44,6 +44,10 @@ COPY install.sh /tmp/
 RUN /tmp/install.sh \
   && rm -f /tmp/install.sh
 
+# Change docker group id (useful during testing)
+ARG DOCKER_GID
+RUN if [ -n "${DOCKER_GID}" ]; then groupmod -g "${DOCKER_GID}" docker; fi
+
 ENTRYPOINT [ "fixdockergid" ]
 
 USER ${USERNAME}
