@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1.2
 
+ARG USERNAME="rootless"
+
 # Compiles _fixdockergid.sh with the suid bit set
 FROM buildpack-deps:focal AS build
 
@@ -23,11 +25,11 @@ FROM scratch AS bin
 COPY --from=build /workspace/_fixdockergid /
 
 
-# Main image
-FROM ubuntu:focal AS main
+# Contains non-root user and docker-cli
+FROM ubuntu:focal AS docker-cli
 
 # Create non-root user
-ARG USERNAME="rootless"
+ARG USERNAME
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
@@ -43,6 +45,10 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends docker-ce-cli \
   # Clean up \
   && rm -rf /var/lib/apt/lists/*
+
+
+# Main image
+FROM docker-cli AS main
 
 COPY --from=bin / /usr/local/share/fixdockergid/
 RUN --mount=source=install.sh,target=/tmp/install.sh \
@@ -67,6 +73,27 @@ ARG HOST_DOCKER_GID
 RUN if [ -n "${HOST_DOCKER_GID}" ]; then groupadd -g "${HOST_DOCKER_GID}" hostdocker; fi
 
 USER rootless
+
+
+FROM docker-cli AS dind
+
+ARG USERNAME
+
+# Install Docker
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends docker-ce containerd.io docker-buildx-plugin sudo \
+  # Clean up \
+  && rm -rf /var/lib/apt/lists/* \
+  # Add user to sudoers \
+  && echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" | tee "/etc/sudoers.d/${USERNAME}" \
+  # Add user to docker group \
+  && usermod -aG docker "${USERNAME}"
+
+VOLUME ["/var/lib/docker"]
+
+CMD ["sudo", "dockerd"]
+
+USER "${USERNAME}"
 
 
 # Set default target
