@@ -124,7 +124,8 @@ function tests() {
   fi
 }
 
-readonly current_user_name="$(id -un)"
+current_user_name="$(id -un)"
+readonly current_user_name
 
 # Exercise happy paths (i.e. uid and gid are equal to host uid and gid already)
 tests

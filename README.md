@@ -30,10 +30,10 @@ USER root
 
 # Replace with your non-root user name
 ARG USERNAME="rootless"
-# Replace with a commit hash
+# Replace with a git tag or commit hash
 ARG FIXDOCKERGID_COMMIT="HEAD"
 
-RUN curl -fsSL https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/install.sh | sh -
+RUN curl -fsSL "https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/install.sh" | sh -
 
 ENTRYPOINT [ "fixdockergid" ]
 
