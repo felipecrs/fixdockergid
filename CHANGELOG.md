@@ -1,3 +1,7 @@
+## Newer versions
+
+Please check the [releases page](https://github.com/felipecrs/fixdockergid/releases) for the changelog of newer versions.
+
 ## 0.6.0
 
 - Cleanup and refactor code a little bit, enable all ShellCheck optional checks and fix them.

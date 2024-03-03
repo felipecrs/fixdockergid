@@ -25,11 +25,11 @@ if [ -f "${_fixdockergid_filename}" ]; then
   # Used when building fixdockergid's Dockerfile
   echo "Using existing ${fixdockergid_dir}/${_fixdockergid_filename}"
 else
-  if [ -z "${FIXDOCKERGID_COMMIT:-}" ]; then
-    error "The FIXDOCKERGID_COMMIT environment variable must be set."
+  if [ -z "${FIXDOCKERGID_VERSION:-}" ]; then
+    error "The FIXDOCKERGID_VERSION environment variable must be set."
   fi
   echo "Downloading ${_fixdockergid_filename} to ${fixdockergid_dir}/${_fixdockergid_filename}"
-  _fixdockergid_url="https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/_fixdockergid"
+  _fixdockergid_url="https://github.com/felipecrs/fixdockergid/releases/download/v${FIXDOCKERGID_VERSION}/_fixdockergid.linux_$(dpkg --print-architecture)"
   if command -v curl >/dev/null; then
     curl -fsSL -o "${_fixdockergid_filename}" "${_fixdockergid_url}"
   else
@@ -46,7 +46,7 @@ if ! command -v fixuid >/dev/null; then
   fi
   fixuid_version='0.6.0'
   echo "Installing fixuid v${fixuid_version}"
-  fixuid_url="https://github.com/boxboat/fixuid/releases/download/v${fixuid_version}/fixuid-${fixuid_version}-linux-amd64.tar.gz"
+  fixuid_url="https://github.com/boxboat/fixuid/releases/download/v${fixuid_version}/fixuid-${fixuid_version}-linux-$(dpkg --print-architecture).tar.gz"
   fixuid_filename='fixuid.tar.gz'
   if command -v curl >/dev/null; then
     curl -fsSL -o "${fixuid_filename}" "${fixuid_url}"

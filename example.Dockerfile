@@ -23,10 +23,10 @@ RUN \
   # Clean up \
   && rm -rf /var/lib/apt/lists/*
 
-# Replace with a git tag or commit hash
-ARG FIXDOCKERGID_COMMIT='HEAD'
+# Replace with a git tag
+ARG FIXDOCKERGID_VERSION="0.7.0"
 # You must also set ARG USERNAME
-RUN curl -fsSL "https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/install.sh" | sh -
+RUN curl -fsSL "https://github.com/felipecrs/fixdockergid/raw/v${FIXDOCKERGID_VERSION}/install.sh" | sh -
 
 ENTRYPOINT [ "fixdockergid" ]
 
