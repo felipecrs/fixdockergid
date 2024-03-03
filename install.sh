@@ -25,11 +25,11 @@ if [ -f "${_fixdockergid_filename}" ]; then
   # Used when building fixdockergid's Dockerfile
   echo "Using existing ${fixdockergid_dir}/${_fixdockergid_filename}"
 else
-  if [ -z "${FIXDOCKERGID_COMMIT:-}" ]; then
-    error "The FIXDOCKERGID_COMMIT environment variable must be set."
+  if [ -z "${FIXDOCKERGID_VERSION:-}" ]; then
+    error "The FIXDOCKERGID_VERSION environment variable must be set."
   fi
   echo "Downloading ${_fixdockergid_filename} to ${fixdockergid_dir}/${_fixdockergid_filename}"
-  _fixdockergid_url="https://raw.githubusercontent.com/felipecrs/fixdockergid/${FIXDOCKERGID_COMMIT}/_fixdockergid"
+  _fixdockergid_url="https://github.com/felipecrs/fixdockergid/releases/v${FIXDOCKERGID_VERSION}/download/_fixdockergid.linux-$(dpkg --print-architecture)"
   if command -v curl >/dev/null; then
     curl -fsSL -o "${_fixdockergid_filename}" "${_fixdockergid_url}"
   else

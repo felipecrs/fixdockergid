@@ -19,7 +19,8 @@ RUN --mount=type=bind,source=_fixdockergid.sh,target=/_fixdockergid.sh \
 # Used by build.sh
 FROM scratch AS dist
 
-COPY --from=build /_fixdockergid /
+ARG TARGETARCH
+COPY --from=build /_fixdockergid /dist/_fixdockergid.linux_${TARGETARCH}
 
 
 # Contains non-root user and docker-cli
@@ -48,7 +49,7 @@ RUN \
 # Main image
 FROM docker-cli AS main
 
-COPY --from=bin / /usr/local/share/fixdockergid/
+COPY --from=build /_fixdockergid /usr/local/share/fixdockergid/
 RUN --mount=source=install.sh,target=/tmp/install.sh \
   /tmp/install.sh
 
