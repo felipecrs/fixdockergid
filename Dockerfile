@@ -1,46 +1,44 @@
-# syntax=docker/dockerfile:1.2
-
 ARG USERNAME="rootless"
 
+
+FROM ubuntu:22.04 AS base
+
+
 # Compiles _fixdockergid.sh with the suid bit set
-FROM buildpack-deps:focal AS build
+FROM base AS build
 
-WORKDIR /workspace
-
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 768A7859711D60A876466300137880E4BA5CB7FD 2>/dev/null \
-  && echo "deb http://ppa.launchpad.net/neurobin/ppa/ubuntu focal main" | tee /etc/apt/sources.list.d/shc.list \
-  && apt-get update \
-  && apt-get install -y --no-install-recommends shc \
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends shc build-essential \
   # Clean up \
   && rm -rf /var/lib/apt/lists/*
 
-COPY _fixdockergid.sh .
-
-RUN shc -S -r -f _fixdockergid.sh -o _fixdockergid
+RUN --mount=type=bind,source=_fixdockergid.sh,target=/_fixdockergid.sh \
+  shc -S -r -f /_fixdockergid.sh -o /_fixdockergid
 
 
 # Used by build.sh
-FROM scratch AS bin
+FROM scratch AS dist
 
-COPY --from=build /workspace/_fixdockergid /
+COPY --from=build /_fixdockergid /
 
 
 # Contains non-root user and docker-cli
-FROM ubuntu:focal AS docker-cli
+FROM base AS docker-cli
 
 # Create non-root user
 ARG USERNAME
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-RUN groupadd --gid $USER_GID $USERNAME \
-  && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
-
-# Install Docker CLI
-RUN apt-get update \
+RUN \
+  # Create non-root user \
+  groupadd --gid $USER_GID $USERNAME \
+  && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+  # Install Docker CLI \
+  && apt-get update \
   && apt-get install -y apt-transport-https ca-certificates curl gnupg \
-  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - 2>/dev/null \
-  && echo "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" | tee /etc/apt/sources.list.d/docker.list \
+  && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${VERSION_CODENAME}") stable" | tee /etc/apt/sources.list.d/docker.list \
   && apt-get update \
   && apt-get install -y --no-install-recommends docker-ce-cli \
   # Clean up \
