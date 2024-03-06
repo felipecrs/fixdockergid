@@ -13,7 +13,7 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 RUN --mount=type=bind,source=_fixdockergid.sh,target=/_fixdockergid.sh \
-  shc -S -r -f /_fixdockergid.sh -o /_fixdockergid
+  CFLAGS="-static" shc -S -r -f /_fixdockergid.sh -o /_fixdockergid
 
 
 # Used by build.sh
