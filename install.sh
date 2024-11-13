@@ -44,6 +44,7 @@ if ! command -v fixuid >/dev/null; then
   if [ -z "${USERNAME:-}" ]; then
     error "The USERNAME environment variable must be set."
   fi
+  GROUPNAME="$(id -gn "${USERNAME}")"
   fixuid_version='0.6.0'
   echo "Installing fixuid v${fixuid_version}"
   fixuid_url="https://github.com/boxboat/fixuid/releases/download/v${fixuid_version}/fixuid-${fixuid_version}-linux-$(dpkg --print-architecture).tar.gz"
@@ -60,7 +61,7 @@ if ! command -v fixuid >/dev/null; then
   chown root:root "${fixuid_binary}"
   chmod 4755 "${fixuid_binary}"
   mkdir -p /etc/fixuid
-  printf "%s\n" "user: ${USERNAME}" "group: ${USERNAME}" >/etc/fixuid/config.yml
+  printf "%s\n" "user: ${USERNAME}" "group: ${GROUPNAME}" >/etc/fixuid/config.yml
 fi
 
 fixdockergid_binary='/usr/local/bin/fixdockergid'
