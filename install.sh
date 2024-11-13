@@ -74,6 +74,9 @@ set -eu
 
 if [ "\${FIXDOCKERGID_DEBUG:-}" = "true" ]; then
   set -x
+  fixuid_flags=""
+else
+  fixuid_flags="-q"
 fi
 
 # Skip if running as root
@@ -85,7 +88,7 @@ unset current_uid
 
 '${fixdockergid_dir}/${_fixdockergid_filename}'
 
-exec fixuid -q -- "\$@"
+exec fixuid \${fixuid_flags} -- "\$@"
 EOF
 chmod +x "${fixdockergid_binary}"
 
