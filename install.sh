@@ -44,7 +44,13 @@ if ! command -v fixuid >/dev/null; then
   if [ -z "${USERNAME:-}" ]; then
     error "The USERNAME environment variable must be set."
   fi
-  GROUPNAME="$(id -gn "${USERNAME}")"
+  if ! getent passwd "${USERNAME}" >/dev/null; then
+    error "The user ${USERNAME} does not exist."
+  fi
+  GROUPNAME="${GROUPNAME:-"${USERNAME}"}"
+  if ! getent group "${GROUPNAME}" >/dev/null; then
+    error "The group ${GROUPNAME} does not exist."
+  fi
   fixuid_version='0.6.0'
   echo "Installing fixuid v${fixuid_version}"
   fixuid_url="https://github.com/boxboat/fixuid/releases/download/v${fixuid_version}/fixuid-${fixuid_version}-linux-$(dpkg --print-architecture).tar.gz"
