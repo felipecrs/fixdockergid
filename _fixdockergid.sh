@@ -43,8 +43,8 @@ if [ -S "${docker_sock}" ]; then
     fi
     unset docker_gid_group_name
   else
-    # There is no group with docker GID does not already exist, so we fix the
-    # group named docker to have the proper docker GID.
+    # There is no group with docker GID, so we fix the group named docker to
+    # have the proper docker GID.
     groupmod -g "${docker_gid}" docker
   fi
 
