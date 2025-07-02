@@ -12,7 +12,7 @@ Advantages:
 
 ## Try it out
 
-I built an image for testing using the [`Dockerfile`](./Dockerfile) and pushed to [DockerHub as felipecrs/fixdockergid](https://hub.docker.com/r/felipecrs/fixdockergid) so you can try it out, just run:
+I built an image for testing using the [`example.Dockerfile`](./example.Dockerfile) and pushed to DockerHub as [felipecrs/fixdockergid](https://hub.docker.com/r/felipecrs/fixdockergid) so you can try it out. Just run:
 
 ```bash
 docker run --rm -u "$(id -u):$(id -g)" -v /var/run/docker.sock:/var/run/docker.sock felipecrs/fixdockergid docker run hello-world
