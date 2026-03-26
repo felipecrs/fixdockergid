@@ -11,6 +11,8 @@ error() {
   exit 1
 }
 
+uid_gid="${1}"
+
 fixuid_config='/etc/fixuid/config.yml'
 
 if [ ! -f "${fixuid_config}" ]; then
@@ -51,8 +53,8 @@ if [ -S "${docker_sock}" ]; then
   fixuid_user_name="$(awk '/user:/ {print $2}' "${fixuid_config}")"
   usermod -a -G docker "${fixuid_user_name}"
 
-  docker_config_json='/run/secrets/docker/config.json'
-  if [ -f "${docker_config_json}" ]; then
-    chown "${fixuid_user_name}:${fixuid_group_name}" "${docker_config_json}"
+  docker_secrets_dir='/run/secrets/docker'
+  if [ -d "${docker_secrets_dir}" ]; then
+    chown -R "${uid_gid}" "${docker_secrets_dir}"
   fi
 fi

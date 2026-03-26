@@ -98,15 +98,22 @@ function tests() {
 
   # Test with --use-api-socket
 
-  # Add fake auth to config.json to trigger --use-api-socket config.json mounting
+  # Populate ~/.docker/config.json to trigger --use-api-socket mounting
   mkdir -p "${HOME}/.docker"
-  echo '{"auths":{"test":{"auth":"dGVzdC11c2VyLXRva2Vu"}}}' | tee "${HOME}/.docker/config.json"
+  echo '{"auths":{"example.com":{"auth":"Zm9vOmJhcgo="}}}' | tee "${HOME}/.docker/config.json"
+
+  # Populate ~/.docker/buildx to trigger --use-api-socket buildx mounting
+  docker buildx build -f - . <<<"FROM scratch"
 
   # Confirm it's owned by root without fixdockergid
+  docker run "${run_options[@]}" --use-api-socket -u "${uid_gid}" --entrypoint= "${container_name}" \
+    stat -c '%U' /run/secrets/docker | tee /dev/stderr | grep -q "^root$"
   docker run "${run_options[@]}" --use-api-socket -u "${uid_gid}" --entrypoint= "${container_name}" \
     stat -c '%U' /run/secrets/docker/config.json | tee /dev/stderr | grep -q "^root$"
 
   # Confirm it's owned by the user with fixdockergid
+  docker run "${run_options[@]}" --use-api-socket -u "${uid_gid}" "${container_name}" \
+    stat -c '%U' /run/secrets/docker | tee /dev/stderr | grep -q "^${expected_user_name}$"
   docker run "${run_options[@]}" --use-api-socket -u "${uid_gid}" "${container_name}" \
     stat -c '%U' /run/secrets/docker/config.json | tee /dev/stderr | grep -q "^${expected_user_name}$"
 

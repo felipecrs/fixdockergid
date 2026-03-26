@@ -92,9 +92,10 @@ current_uid="\$(id -u)"
 if [ "\${current_uid}" = 0 ]; then
   exec "\$@"
 fi
-unset current_uid
 
-'${fixdockergid_dir}/${_fixdockergid_filename}'
+current_gid="\$(id -g)"
+
+'${fixdockergid_dir}/${_fixdockergid_filename}' "\${current_uid}:\${current_gid}"
 
 exec fixuid \${fixuid_flags} -- "\$@"
 EOF
