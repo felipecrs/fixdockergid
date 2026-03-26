@@ -17,6 +17,8 @@ if ! command -v curl >/dev/null && ! command -v wget >/dev/null; then
   error "This script needs curl or wget installed."
 fi
 
+GITHUB_BASE_URL="${GITHUB_BASE_URL:-"https://github.com"}"
+
 fixdockergid_dir=/usr/local/share/fixdockergid
 mkdir -p "${fixdockergid_dir}"
 cd "${fixdockergid_dir}"
@@ -29,7 +31,7 @@ else
     error "The FIXDOCKERGID_VERSION environment variable must be set."
   fi
   echo "Downloading ${_fixdockergid_filename} to ${fixdockergid_dir}/${_fixdockergid_filename}"
-  _fixdockergid_url="https://github.com/felipecrs/fixdockergid/releases/download/v${FIXDOCKERGID_VERSION}/_fixdockergid.linux_$(dpkg --print-architecture)"
+  _fixdockergid_url="${GITHUB_BASE_URL}/felipecrs/fixdockergid/releases/download/v${FIXDOCKERGID_VERSION}/_fixdockergid.linux_$(dpkg --print-architecture)"
   if command -v curl >/dev/null; then
     curl -fsSL -o "${_fixdockergid_filename}" "${_fixdockergid_url}"
   else
@@ -53,7 +55,7 @@ if ! command -v fixuid >/dev/null; then
   fi
   fixuid_version='0.6.0'
   echo "Installing fixuid v${fixuid_version}"
-  fixuid_url="https://github.com/boxboat/fixuid/releases/download/v${fixuid_version}/fixuid-${fixuid_version}-linux-$(dpkg --print-architecture).tar.gz"
+  fixuid_url="${GITHUB_BASE_URL}/boxboat/fixuid/releases/download/v${fixuid_version}/fixuid-${fixuid_version}-linux-$(dpkg --print-architecture).tar.gz"
   fixuid_filename='fixuid.tar.gz'
   if command -v curl >/dev/null; then
     curl -fsSL -o "${fixuid_filename}" "${fixuid_url}"
