@@ -31,7 +31,7 @@ USER root
 # Replace with your non-root user name
 ARG USERNAME="rootless"
 # Replace with a git tag
-ARG FIXDOCKERGID_VERSION="0.7.3"
+ARG FIXDOCKERGID_VERSION="0.7.4"
 
 RUN curl -fsSL "https://github.com/felipecrs/fixdockergid/raw/v${FIXDOCKERGID_VERSION}/install.sh" | sh -
 

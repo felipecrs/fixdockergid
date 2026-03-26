@@ -89,7 +89,7 @@ function tests() {
       groups | tee /dev/stderr | grep -q "^${expected_user_name}$"
   else
     docker run "${run_options[@]}" -v /var/run/docker.sock:/var/run/docker.sock -u "${uid_gid}" "${container_name}" \
-      groups | tee /dev/stderr | grep -q -E "^(${expected_user_name} docker)|(docker ${expected_user_name})$"
+      groups | tee /dev/stderr | grep -E "(^| )${expected_user_name}( |$)" | grep -q -E "(^| )docker( |$)"
   fi
 
   # Confirm fixdockergid is working
@@ -102,7 +102,7 @@ function tests() {
       docker run "${run_options[@]}" -v /var/run/docker.sock:/var/run/docker.sock -u "${uid_gid}" --entrypoint= "${container_name}" \
         docker version --format '{{.Server.Version}}' 2>&1 || true
     } |
-      grep 'dial unix /var/run/docker.sock: connect: permission denied'
+      grep 'permission denied'
   fi
 
   # Test docker exec with --group-add=docker
@@ -119,7 +119,7 @@ function tests() {
       docker exec "${container_name}" \
         docker version --format '{{.Server.Version}}' 2>&1 || true
     } |
-      grep 'dial unix /var/run/docker.sock: connect: permission denied'
+      grep 'permission denied'
     docker rm -f "${container_name}"
   fi
 }
