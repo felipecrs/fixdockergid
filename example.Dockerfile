@@ -20,7 +20,7 @@ RUN \
   && rm -rf /var/lib/apt/lists/*
 
 # Replace with a git tag
-ARG FIXDOCKERGID_VERSION="0.7.3"
+ARG FIXDOCKERGID_VERSION="0.8.1"
 # You must also set ARG USERNAME
 RUN curl -fsSL "https://github.com/felipecrs/fixdockergid/raw/v${FIXDOCKERGID_VERSION}/install.sh" | sh -
 
