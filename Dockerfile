@@ -1,6 +1,5 @@
 ARG BASE_IMAGE="buildpack-deps:noble"
-# Ubuntu 24.04 image comes with this user by default
-ARG USERNAME="ubuntu"
+ARG USERNAME="rootless"
 
 FROM ${BASE_IMAGE}-curl AS base
 
@@ -27,6 +26,20 @@ COPY --from=build /_fixdockergid /dist/_fixdockergid.linux_${TARGETARCH}
 
 # Contains non-root user and docker-cli
 FROM base AS docker-cli
+
+# Create non-root user
+ARG USERNAME
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN \
+  # Ubuntu 24.04 image comes with this user by default \
+  if getent passwd ubuntu >/dev/null; then \
+      userdel -r ubuntu; \
+  fi \
+  # Create non-root user \
+  && groupadd --gid "$USER_GID" "$USERNAME" \
+  && useradd --uid "$USER_UID" --gid "$USER_GID" -m "$USERNAME"
 
 # Install Docker CLI
 RUN \
