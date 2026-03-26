@@ -50,4 +50,9 @@ if [ -S "${docker_sock}" ]; then
 
   fixuid_user_name="$(awk '/user:/ {print $2}' "${fixuid_config}")"
   usermod -a -G docker "${fixuid_user_name}"
+
+  docker_config_json='/run/secrets/docker/config.json'
+  if [ -f "${docker_config_json}" ]; then
+    chown "${fixuid_user_name}:${fixuid_group_name}" "${docker_config_json}"
+  fi
 fi

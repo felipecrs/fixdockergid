@@ -96,6 +96,20 @@ function tests() {
   docker run "${run_options[@]}" -v /var/run/docker.sock:/var/run/docker.sock -u "${uid_gid}" "${container_name}" \
     docker version --format '{{.Server.Version}}'
 
+  # Test with --use-api-socket
+
+  # Add fake auth to config.json to trigger --use-api-socket config.json mounting
+  mkdir -p "${HOME}/.docker"
+  echo '{"auths":{"test":{"auth":"dGVzdC11c2VyLXRva2Vu"}}}' | tee "${HOME}/.docker/config.json"
+
+  # Confirm it's owned by root without fixdockergid
+  docker run "${run_options[@]}" --use-api-socket -u "${uid_gid}" --entrypoint= "${container_name}" \
+    stat -c '%U' /run/secrets/docker/config.json | tee /dev/stderr | grep -q "^root$"
+
+  # Confirm it's owned by the user with fixdockergid
+  docker run "${run_options[@]}" --use-api-socket -u "${uid_gid}" "${container_name}" \
+    stat -c '%U' /run/secrets/docker/config.json | tee /dev/stderr | grep -q "^${expected_user_name}$"
+
   if [[ "${expected_user_name}" != "root" && "${current_gid}" != "${current_docker_gid}" ]]; then
     # Confirm it doesn't work without fixdockergid
     {
